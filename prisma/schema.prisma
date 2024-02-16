@@ -21,7 +21,7 @@ model User {
   telegram_id String @unique
   active Boolean @default(true)
   role  Role @default(USER)
-  branchId String @db.ObjectId
+  branchId String? @db.ObjectId
   branch Branch? @relation(fields: [branchId], references: [id])
   orders order[]
 
@@ -32,7 +32,7 @@ model User {
 
 model Branch  {
   id  String @id @default(auto()) @map("_id") @db.ObjectId
-  name String
+  name String @unique
   address String
   users User[]
   orders order[]
@@ -53,6 +53,7 @@ model orderProducts {
   id String @id @default(auto()) @map("_id") @db.ObjectId
   product_id String @db.ObjectId
   order_id   String @db.ObjectId
+  count       Float
   order   order @relation(fields: [order_id], references: [id])
   product   product @relation(fields: [product_id], references: [id])
 }
