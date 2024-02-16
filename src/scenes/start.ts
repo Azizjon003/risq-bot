@@ -26,9 +26,10 @@ scene.enter(async (ctx: any) => {
     }
     console.log(branch);
 
-    ctx.reply("Welcome to the bot!", keyboards(branch));
+    await ctx.reply("Welcome to the bot!", keyboards(branch));
+    console.log("Welcome to the bot!");
     return ctx.scene.enter("branches");
-    ctx.reply("Welcome to the bot!");
+    // ctx.reply("Welcome to the bot!");
   } else if (enable === "two") {
     ctx.reply("You are not enabled to use the bot");
   } else if (enable === "three") {

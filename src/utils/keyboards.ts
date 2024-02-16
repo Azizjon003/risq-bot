@@ -5,3 +5,11 @@ export const keyboards = (arr: any[]) => {
 
   return keyboard;
 };
+
+export function createInlineKeyboard(buttons: any[]) {
+  return Markup.inlineKeyboard(
+    buttons.map((button) =>
+      Markup.button.callback(button.text, button.callbackData)
+    )
+  );
+}
