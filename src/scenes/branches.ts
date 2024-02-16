@@ -42,13 +42,13 @@ scene.on("message", async (ctx: any) => {
   let product = addInlineKeyboard(products);
   product = product.filter((item) => item.length > 0);
   console.log(product);
-  // const inlineKeyboard = createInlineKeyboard(product);
-  // console.log(inlineKeyboard);
+
   ctx.reply("Kerakli mahsulotni tanlang!", {
     reply_markup: {
       inline_keyboard: product,
     },
   });
+  return ctx.scene.enter("orders");
 });
 
 export default scene;
