@@ -42,7 +42,7 @@ model Branch  {
 
 model product {
   id String @id @default(auto()) @map("_id") @db.ObjectId
-  name String
+  name String  @unique  
   price Float
   description String?
   image String?

@@ -20,13 +20,16 @@ scene.enter(async (ctx: any) => {
       },
     });
     let length = branches.length;
-    let branch = [];
+    let branch = [["Bugungi buyurtmalar"], ["Admin bilan aloqa"]];
     for (let i = 0; i < length; i++) {
       branch.push([branches[i].name]);
     }
-    console.log(branch);
+    branch.reverse();
 
-    await ctx.reply("Welcome to the bot!", keyboards(branch));
+    await ctx.reply("Welcome to the bot!", {
+      ...keyboards(branch),
+      remove_keyboard: true,
+    });
     console.log("Welcome to the bot!");
     return ctx.scene.enter("branches");
     // ctx.reply("Welcome to the bot!");
