@@ -51,11 +51,13 @@ model product {
 
 model orderProducts {
   id String @id @default(auto()) @map("_id") @db.ObjectId
-  product_id String @db.ObjectId
-  order_id   String @db.ObjectId
+  product_id String @db.ObjectId 
+  order_id   String @db.ObjectId 
   count       Float
   order   order @relation(fields: [order_id], references: [id])
   product   product @relation(fields: [product_id], references: [id])
+    created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 }
 
 model order {

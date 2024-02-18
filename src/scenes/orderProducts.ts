@@ -22,7 +22,24 @@ scene.on("callback_query", async (ctx: any) => {
   });
 
   if (!product) return ctx.reply(`Bu mahsulot mavjud emas`);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0); // Sanani belgilangan vaqtni (0:00:00) sozlaymiz
 
+  let orderProducts = await prisma.orderProducts.findFirst({
+    where: {
+      product_id: String(product?.id),
+      created_at: {
+        gte: today,
+      },
+    },
+  });
+  console.log(orderProducts);
+
+  if (orderProducts) {
+    let text = `Siz bugun ushbu mahsulotni buyurtma qilgansiz bugun uchun. \nMahsulot: ${product.name}\nNarxi: ${product.price}\n Soni: ${orderProducts.count}.Mahsulotni qayta buyurtma qilish uchun sonni kiriting (faqat son kiriting):`;
+    ctx.session.product = product;
+    return ctx.reply(text);
+  }
   const text = `Mahsulot: ${product.name}\nNarxi: ${product.price}\nMahsulot sonini kiriting(Faqat son kiriting):`;
   ctx.session.product = product;
   ctx.reply(text);
@@ -39,7 +56,6 @@ scene.hears(/^[0-9]+$/, async (ctx: any) => {
   const today = new Date();
   today.setHours(0, 0, 0, 0); // Sanani belgilangan vaqtni (0:00:00) sozlaymiz
 
-  console.log(today);
   let orders = await prisma.order.findFirst({
     where: {
       userId: String(user?.id),
@@ -59,15 +75,53 @@ scene.hears(/^[0-9]+$/, async (ctx: any) => {
     });
   }
 
-  let orderProducts = await prisma.orderProducts.create({
-    data: {
+  const isOrderProduct = await prisma.orderProducts.findFirst({
+    where: {
       order_id: String(orders?.id),
       product_id: String(product?.id),
-      count: Number(count),
+    },
+  });
+  if (!isOrderProduct) {
+    let orderProducts = await prisma.orderProducts.create({
+      data: {
+        order_id: String(orders?.id),
+        product_id: String(product?.id),
+        count: Number(count),
+      },
+    });
+  } else {
+    let orderProducts = await prisma.orderProducts.update({
+      where: {
+        id: String(isOrderProduct?.id),
+      },
+      data: {
+        count: Number(count),
+      },
+    });
+  }
+
+  const orderProduct = await prisma.orderProducts.findMany({
+    where: {
+      order_id: String(orders?.id),
+    },
+    include: {
+      product: true,
     },
   });
 
-  ctx.reply("Buyurtma qabul qilindi!");
+  let text = `Sizning buyurtmangiz: \n`;
+  let umumiyNarx = 0;
+  for (let i = 0; i < orderProduct.length; i++) {
+    let txt = `${i + 1}. ${orderProduct[i].count} x ${
+      orderProduct[i].product.name
+    } = ${orderProduct[i].count * orderProduct[i].product.price}\n`;
+    umumiyNarx += orderProduct[i].count * orderProduct[i].product.price;
+    text += txt;
+  }
+
+  ctx.reply(
+    "Buyurtma qabul qilindi!" + `\n${text} \nUmumiy narxi: ${umumiyNarx}`
+  );
   return ctx.scene.enter("branches");
 });
 
