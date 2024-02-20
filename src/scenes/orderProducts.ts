@@ -1,4 +1,4 @@
-import { Scenes } from "telegraf";
+import { Markup, Scenes } from "telegraf";
 import prisma from "../../prisma/prisma";
 import { createInlineKeyboard } from "../utils/keyboards";
 import { addInlineKeyboard } from "../utils/functions";
@@ -107,14 +107,20 @@ scene.hears(/^[0-9]+$/, async (ctx: any) => {
       },
     }
   );
+  // ctx.reply(text, {
+  //   reply_murkup: {
+  //     remove_keyboard: true,
+  //     keyboard: [["Bosh Menyu"]],
+  //     resize_keyboard: true,
+  //   },
+  // });
 
-  ctx.reply("Mahsulotni kiriting yoki bosh menyuga o'ting", {
-    reply_murkup: {
-      remove_keyboard: true,
-      keyboard: [["Bosh Menyu"]],
-      resize_keyboard: true,
-    },
-  });
+  ctx.reply(
+    "Mahsulotni kiriting yoki bosh menyuga o'ting",
+    Markup.keyboard([["Bosh Menyu"]])
+      .resize()
+      .oneTime()
+  );
   // return ctx.scene.enter("branches");
 });
 scene.on("message", async (ctx: any) => {
