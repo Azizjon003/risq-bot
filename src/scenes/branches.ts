@@ -52,6 +52,7 @@ scene.hears("Bugungi buyurtmalar", async (ctx: any) => {
 
   return ctx.scene.enter("branches");
 });
+
 scene.on("message", async (ctx: any) => {
   const text = ctx.update.message?.text?.trim();
   const user = await prisma.user.findFirst({
