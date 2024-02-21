@@ -9,10 +9,12 @@ export let keyboard = [
   "Filiallar",
   "Foydalanuvchilar",
   "Mahsulotlar",
+  "Filliallarga odam qo'shish",
 ];
 scene.enter(async (ctx: any) => {
   const user_id = ctx.from?.id;
   const user_name = ctx.from?.first_name || ctx.from?.username;
+  console.log(ctx);
   const enable = await enabled(String(user_id), String(user_name));
 
   if (enable === "one") {

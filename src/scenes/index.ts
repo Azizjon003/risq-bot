@@ -5,6 +5,7 @@ import orderProducts from "./orderProducts";
 import admin from "./admin";
 import adminFillials from "./adminFillials";
 import editFillials from "./fillialsEdit";
+import addbranchUser from "./addBranchesUser";
 const stage = new Scenes.Stage([
   start,
   branches,
@@ -12,6 +13,7 @@ const stage = new Scenes.Stage([
   admin,
   adminFillials,
   editFillials,
+  addbranchUser,
 ]);
 
 export default stage;

@@ -96,6 +96,31 @@ scene.hears(keyboard, async (ctx: any) => {
     }
 
     ctx.reply(text);
+  } else if (text === "Filliallarga odam qo'shish") {
+    const branches = await prisma.branch.findMany({});
+    let buttons = branches.map((item) => {
+      return [
+        {
+          text: item.name,
+          callback_data: item.id,
+        },
+      ];
+    });
+    buttons.push([
+      {
+        text: "Orqaga",
+        callback_data: "back",
+      },
+    ]);
+
+    // let keyboard = createInlineKeyboard(buttons);
+
+    ctx.reply("Filiallarimiz fillialni tanlang", {
+      reply_markup: {
+        inline_keyboard: buttons,
+      },
+    });
+    return ctx.scene.enter("addBranchesUser");
   }
 });
 
