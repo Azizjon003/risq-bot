@@ -11,6 +11,7 @@ export let keyboard = [
   "Mahsulotlar",
   "Filliallarga odam qo'shish",
 ];
+export let keyboard2 = ["Fikr bildirish", "Admin bilan aloqa"];
 scene.enter(async (ctx: any) => {
   const user_id = ctx.from?.id;
   const user_name = ctx.from?.first_name || ctx.from?.username;
@@ -42,9 +43,17 @@ scene.enter(async (ctx: any) => {
     console.log("Добро пожаловать в бот");
     return ctx.scene.enter("branches");
   } else if (enable === "two") {
-    ctx.reply("Добро пожаловать в бот");
+    ctx.reply("Добро пожаловать в бот", {
+      ...keyboards(keyboard2),
+      remove_keyboard: true,
+    });
+    ctx.scene.enter("publicUsers");
   } else if (enable === "three") {
-    ctx.reply("Добро пожаловать в бот");
+    ctx.reply("Добро пожаловать в бот", {
+      ...keyboards(keyboard2),
+      remove_keyboard: true,
+    });
+    return ctx.scene.enter("publicUsers");
   } else if (enable === "four") {
     ctx.reply("Welcome to the bot admin!", {
       ...keyboards(keyboard),
