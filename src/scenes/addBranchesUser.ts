@@ -116,7 +116,8 @@ scene.hears(/^[0-9]+$/, async (ctx: any) => {
       },
     });
 
-    return ctx.reply("Foydalanuvchi qo'shildi");
+    ctx.reply("Foydalanuvchi qo'shildi");
+    return ctx.scene.enter("admin");
   }
 });
 

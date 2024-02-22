@@ -14,9 +14,10 @@ export let keyboard = [
 scene.enter(async (ctx: any) => {
   const user_id = ctx.from?.id;
   const user_name = ctx.from?.first_name || ctx.from?.username;
-  console.log(ctx);
+  console.log("ctx");
   const enable = await enabled(String(user_id), String(user_name));
 
+  console.log(enable, "enable");
   if (enable === "one") {
     let branches = await prisma.branch.findMany({
       where: {

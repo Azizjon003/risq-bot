@@ -29,6 +29,12 @@ scene.hears(/^[0-9]+$/, async (ctx: any) => {
     },
   });
 
+  const branch = await prisma.branch.findFirst({
+    where: {
+      id: String(user?.branchId),
+    },
+  });
+
   if (!orders) {
     orders = await prisma.order.create({
       data: {
@@ -93,7 +99,7 @@ scene.hears(/^[0-9]+$/, async (ctx: any) => {
 
   ctx.reply(
     "Buyurtma qabul qilindi!" +
-      `\n${text} \nUmumiy narxi: ${umumiyNarx} \n Qaytadan buyurtmaga mahsulot qo'shing`,
+      `\n${text} \nUmumiy Soni: ${umumiyNarx} \n Qaytadan buyurtmaga mahsulot qo'shing`,
     {
       reply_markup: {
         inline_keyboard: [
@@ -114,6 +120,12 @@ scene.hears(/^[0-9]+$/, async (ctx: any) => {
   //     resize_keyboard: true,
   //   },
   // });
+
+  const channelId = process.env.CHANNEL_ID;
+  ctx.telegram.sendMessage(
+    channelId,
+    `${branch?.name} fillial buyurtma qildi` + text
+  );
 
   ctx.reply(
     "Mahsulotni kiriting yoki bosh menyuga o'ting",

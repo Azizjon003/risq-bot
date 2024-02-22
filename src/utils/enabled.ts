@@ -10,13 +10,11 @@ const enabled = async (id: string, name: string): Promise<enabledEnum> => {
     where: {
       telegram_id: id,
     },
-    include: {
-      branch: true,
-    },
   });
 
+  console.log(user, "user");
   if (user) {
-    const branch = user?.branch;
+    const branch = user?.branchId;
     if (user.role == "ADMIN") return enabledEnum.four;
     if (branch) return enabledEnum.one;
     else return enabledEnum.two;
