@@ -47,7 +47,70 @@ scene.hears("Bugungi buyurtmalar", async (ctx: any) => {
 
   ctx.reply(
     "Buyurtma qabul qilindi!" +
-      `\n${text} \nUmumiy narxi: ${umumiyNarx} \n Qaytadan buyurtmaga mahsulot qo'shing`
+      `\n${text} \nUmumiy narxi: ${umumiyNarx} \n Qaytadan buyurtmaga mahsulot qo'shing`,
+    {
+      reply_markup: {
+        inline_keyboard: [
+          [
+            {
+              text: "Buyurtmani adminga yuborish",
+              callback_data: "send",
+            },
+          ],
+        ],
+      },
+    }
+  );
+
+  return ctx.scene.enter("branches");
+});
+
+scene.action("send", async (ctx: any) => {
+  const id = ctx.from.id;
+  const user = await prisma.user.findFirst({
+    where: {
+      telegram_id: String(id),
+    },
+    include: {
+      branch: true,
+    },
+  });
+
+  let today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const orderProduct = await prisma.orderProducts.findMany({
+    where: {
+      order: {
+        userId: String(user?.id),
+      },
+      created_at: {
+        gte: today,
+      },
+    },
+    include: {
+      product: true,
+    },
+  });
+
+  if (orderProduct.length === 0) {
+    ctx.reply("Mahsulot hali buyurtma bermadingiz");
+    return ctx.scene.enter("branches");
+  }
+
+  let text = `Sizning buyurtmangiz: \n`;
+  let umumiyNarx = 0;
+  for (let i = 0; i < orderProduct.length; i++) {
+    let txt = `${i + 1}. ${orderProduct[i].count} x ${
+      orderProduct[i].product.name
+    } = ${orderProduct[i].count * orderProduct[i].product.price}\n`;
+    umumiyNarx += orderProduct[i].count * orderProduct[i].product.price;
+    text += txt;
+  }
+  const channelId = process.env.CHANNEL_ID;
+  ctx.telegram.sendMessage(
+    channelId,
+    `#${user?.branch?.name}\n${text} \nUmumiy narxi: ${umumiyNarx} \n `
   );
 
   return ctx.scene.enter("branches");

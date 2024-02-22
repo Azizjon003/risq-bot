@@ -121,11 +121,11 @@ scene.hears(/^[0-9]+$/, async (ctx: any) => {
   //   },
   // });
 
-  const channelId = process.env.CHANNEL_ID;
-  ctx.telegram.sendMessage(
-    channelId,
-    `${branch?.name} fillial buyurtma qildi` + text
-  );
+  // const channelId = process.env.CHANNEL_ID;
+  // ctx.telegram.sendMessage(
+  //   channelId,
+  //   `${branch?.name} fillial buyurtma qildi` + text
+  // );
 
   ctx.reply(
     "Mahsulotni kiriting yoki bosh menyuga o'ting",
