@@ -37,6 +37,6 @@ bot.on("inline_query", async (ctx: any) => {
   await ctx.answerInlineQuery(results);
 });
 bot.catch((err: any, ctx: any) => {
-  console.log(`Ooops, encountered an error for ${ctx.updateType}`, err);
+  console.log(`Ooops, encountered an error for ${ctx}`, err);
 });
 botStart(bot);
