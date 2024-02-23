@@ -24,6 +24,7 @@ scene.enter(async (ctx: any) => {
 
   // console.log(enable, "enable");
   if (enable === "one") {
+    // if (!branchAdded) {
     let branches = await prisma.branch.findMany({
       where: {
         users: {
@@ -34,7 +35,7 @@ scene.enter(async (ctx: any) => {
       },
     });
     let length = branches.length;
-    let branch = [["Bugungi buyurtmalar"]];
+    let branch = [["Bugungi buyurtmalar"], ["Fillialni almashtirish"]];
     for (let i = 0; i < length; i++) {
       branch.push([branches[i].name]);
     }
@@ -44,6 +45,8 @@ scene.enter(async (ctx: any) => {
       ...keyboards(branch),
       remove_keyboard: true,
     });
+    // }
+
     console.log("Добро пожаловать в бот");
     return ctx.scene.enter("branches");
   } else if (enable === "two") {

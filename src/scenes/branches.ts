@@ -11,6 +11,9 @@ scene.hears("Bugungi buyurtmalar", async (ctx: any) => {
     where: {
       telegram_id: String(id),
     },
+    include: {
+      branch: true,
+    },
   });
 
   let today = new Date();
@@ -20,6 +23,7 @@ scene.hears("Bugungi buyurtmalar", async (ctx: any) => {
     where: {
       order: {
         userId: String(user?.id),
+        branchId: user?.branch?.id,
       },
       created_at: {
         gte: today,
@@ -64,6 +68,31 @@ scene.hears("Bugungi buyurtmalar", async (ctx: any) => {
 
   return ctx.scene.enter("branches");
 });
+scene.hears("Fillialni almashtirish", async (ctx: any) => {
+  let branches = await prisma.branch.findMany({});
+  let branchesInlineKeyboard: any = [];
+  branches.forEach((branch) => {
+    branchesInlineKeyboard.push([
+      {
+        text: branch.name,
+        callback_data: `${branch.id}`,
+      },
+    ]);
+  });
+  const txt =
+    "Assalomu alaykum, " +
+    ctx.from?.first_name +
+    "!\n" +
+    "Sizga qaysi filialga kirishni xohlaysiz?.Shu fillialni  belgilang";
+
+  ctx.reply(txt, {
+    reply_markup: {
+      inline_keyboard: branchesInlineKeyboard,
+    },
+  });
+
+  return ctx.scene.enter("addbranch");
+});
 
 scene.action("send", async (ctx: any) => {
   const id = ctx.from.id;
@@ -75,15 +104,40 @@ scene.action("send", async (ctx: any) => {
       branch: true,
     },
   });
+  console.log(user, "user");
 
   let today = new Date();
   today.setHours(0, 0, 0, 0);
-
+  let order = await prisma.order.findFirst({
+    where: {
+      AND: [
+        {
+          userId: String(user?.id),
+        },
+        {
+          branchId: user?.branch?.id,
+        },
+      ],
+      created_at: {
+        gte: today,
+      },
+    },
+  });
   const orderProduct = await prisma.orderProducts.findMany({
     where: {
-      order: {
-        userId: String(user?.id),
-      },
+      order_id: order?.id,
+      // order: {
+      //   AND: [
+      //     {
+      //       userId: String(user?.id),
+      //     },
+      //     {
+      //       branchId: user?.branch?.id,
+      //     },
+      //   ],
+      // userId: String(user?.id),
+      // branchId: user?.branch?.id,
+      // },
       created_at: {
         gte: today,
       },
