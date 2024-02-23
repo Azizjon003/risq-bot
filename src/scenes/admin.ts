@@ -14,6 +14,22 @@ let keyboard = [
   "Filliallarga odam qo'shish",
 ];
 
+scene.action("add", async (ctx: any) => {
+  ctx.reply("Mahsulot qo'shish. Mahsulot nomini kiriting");
+  ctx.session.user = {
+    action: "add",
+  };
+  return ctx.scene.enter("addproducts");
+});
+
+scene.action("delete", async (ctx: any) => {
+  ctx.reply("Mahsulotni o'chirish. Mahsulot nomini kiriting");
+  ctx.session.user = {
+    action: "delete",
+  };
+  return ctx.scene.enter("addproducts");
+});
+
 scene.hears(keyboard, async (ctx: any) => {
   const text = ctx.update.message?.text?.trim();
   console.log(text);
@@ -95,7 +111,26 @@ scene.hears(keyboard, async (ctx: any) => {
       } ta\n`;
     }
 
-    ctx.reply(text);
+    let buttons = [
+      [
+        {
+          text: "Mahsulot qo'shish",
+          callback_data: "add",
+        },
+      ],
+      [
+        {
+          text: "Mahsulotni o'chirish",
+          callback_data: "delete",
+        },
+      ],
+    ];
+
+    ctx.reply(text, {
+      reply_markup: {
+        inline_keyboard: buttons,
+      },
+    });
   } else if (text === "Filliallarga odam qo'shish") {
     const branches = await prisma.branch.findMany({});
     let buttons = branches.map((item) => {
