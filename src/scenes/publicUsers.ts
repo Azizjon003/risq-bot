@@ -8,14 +8,17 @@ scene.hears("/start", (ctx: any) => ctx.scene.enter("start"));
 scene.hears(keyboard2, (ctx: any) => {
   const user_id = ctx.from?.id;
   const text = ctx.message.text;
+  const branch_id = ctx.session.user?.branch_id;
   if (text === "Fikr bildirish") {
     ctx.session.user = {
       action: "fikr",
+      branch_id: branch_id,
     };
     ctx.reply("Fikringizni yozib qoldiring  ");
   } else if (text === "Admin bilan aloqa") {
     ctx.session.user = {
       action: "aloqa",
+      branch_id: branch_id,
     };
     ctx.reply("Admin bilan aloqa");
   }

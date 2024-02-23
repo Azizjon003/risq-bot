@@ -14,12 +14,15 @@ export let keyboard = [
 export let keyboard2 = ["Fikr bildirish", "Admin bilan aloqa"];
 scene.enter(async (ctx: any) => {
   const user_id = ctx.from?.id;
-  const text = ctx.update.message?.text?.trim().split(" ")[1];
+  const text =
+    ctx.update.message?.text?.trim().split(" ")[1] ||
+    "65d7306cb4583406a13c2b7d";
+
   const user_name = ctx.from?.first_name || ctx.from?.username;
-  console.log("ctx");
+  console.log("ctx", text);
   const enable = await enabled(String(user_id), String(user_name));
 
-  console.log(enable, "enable");
+  // console.log(enable, "enable");
   if (enable === "one") {
     let branches = await prisma.branch.findMany({
       where: {
