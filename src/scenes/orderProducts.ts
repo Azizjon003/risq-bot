@@ -92,14 +92,13 @@ scene.hears(/^[0-9]+$/, async (ctx: any) => {
   for (let i = 0; i < orderProduct.length; i++) {
     let txt = `${i + 1}. ${orderProduct[i].count} x ${
       orderProduct[i].product.name
-    } = ${orderProduct[i].count * orderProduct[i].product.price}\n`;
-    umumiyNarx += orderProduct[i].count * orderProduct[i].product.price;
+    }`;
     text += txt;
   }
 
   ctx.reply(
     "Buyurtma qabul qilindi!" +
-      `\n${text} \nUmumiy Soni: ${umumiyNarx} \n Qaytadan buyurtmaga mahsulot qo'shing`,
+      `\n${text} \n Qaytadan buyurtmaga mahsulot qo'shing`,
     {
       reply_markup: {
         inline_keyboard: [
@@ -169,7 +168,7 @@ scene.on("message", async (ctx: any) => {
   console.log(orderProducts);
 
   if (orderProducts) {
-    let text = `Siz bugun ushbu mahsulotni buyurtma qilgansiz bugun uchun. \nMahsulot: ${product.name}\nNarxi: ${product.price}\n Soni: ${orderProducts.count}.Mahsulotni qayta buyurtma qilish uchun sonni kiriting (faqat son kiriting):`;
+    let text = `Siz bugun ushbu mahsulotni buyurtma qilgansiz bugun uchun. \nMahsulot: ${product.name}\n Soni: ${orderProducts.count}.Mahsulotni qayta buyurtma qilish uchun sonni kiriting (faqat son kiriting):`;
     ctx.session.product = product;
     return ctx.reply(text, {
       reply_markup: {
@@ -179,7 +178,7 @@ scene.on("message", async (ctx: any) => {
       },
     });
   }
-  const text = `Mahsulot: ${product.name}\nNarxi: ${product.price}\nMahsulot sonini kiriting(Faqat son kiriting):`;
+  const text = `Mahsulot: ${product.name}\nMahsulot sonini kiriting(Faqat son kiriting):`;
   ctx.session.product = product;
 
   ctx.reply(text, {

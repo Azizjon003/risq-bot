@@ -44,14 +44,13 @@ scene.hears("Bugungi buyurtmalar", async (ctx: any) => {
   for (let i = 0; i < orderProduct.length; i++) {
     let txt = `${i + 1}. ${orderProduct[i].count} x ${
       orderProduct[i].product.name
-    } = ${orderProduct[i].count * orderProduct[i].product.price}\n`;
-    umumiyNarx += orderProduct[i].count * orderProduct[i].product.price;
+    }`;
     text += txt;
   }
 
   ctx.reply(
     "Buyurtma qabul qilindi!" +
-      `\n${text} \nUmumiy narxi: ${umumiyNarx} \n Qaytadan buyurtmaga mahsulot qo'shing`,
+      `\n${text}  \n Qaytadan buyurtmaga mahsulot qo'shing`,
     {
       reply_markup: {
         inline_keyboard: [
@@ -158,13 +157,12 @@ scene.action("send", async (ctx: any) => {
     let txt = `${i + 1}. ${orderProduct[i].count} x ${
       orderProduct[i].product.name
     } = ${orderProduct[i].count * orderProduct[i].product.price}\n`;
-    umumiyNarx += orderProduct[i].count * orderProduct[i].product.price;
     text += txt;
   }
   const channelId = process.env.CHANNEL_ID;
   ctx.telegram.sendMessage(
     channelId,
-    `#${user?.branch?.name}\n${text} \nUmumiy narxi: ${umumiyNarx} \n Yuborilgan <a href="tg://user?id=${id}">${user?.name}</a>`,
+    `#${user?.branch?.name}\n${text}  \n Yuborilgan <a href="tg://user?id=${id}">${user?.name}</a>`,
     {
       parse_mode: "HTML",
     }

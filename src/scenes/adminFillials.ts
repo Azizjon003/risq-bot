@@ -43,16 +43,13 @@ scene.action(/^(?=[a-f\d]{24}$)(\d+[a-f]|[a-f]+\d)/i, async (ctx: any) => {
   let umumiyNarx = 0;
 
   for (let i = 0; i < product.length; i++) {
-    let txt = `${i + 1}. ${product[i].count} x ${product[i].product.name} = ${
-      product[i].count * product[i].product.price
-    }\n`;
-    umumiyNarx += product[i].count * product[i].product.price;
+    let txt = `${i + 1}. ${product[i].count} x ${product[i].product.name}\n`;
     text += txt;
   }
 
   ctx.reply(
     "Buyurtma qabul qilindi!" +
-      `\n${text} \nUmumiy narxi: ${umumiyNarx} \n Qaytadan buyurtmaga mahsulot qo'shing`
+      `\n${text}  \n Qaytadan buyurtmaga mahsulot qo'shing`
   );
 
   return ctx.scene.enter("admin");
