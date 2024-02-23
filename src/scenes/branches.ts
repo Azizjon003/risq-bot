@@ -110,7 +110,10 @@ scene.action("send", async (ctx: any) => {
   const channelId = process.env.CHANNEL_ID;
   ctx.telegram.sendMessage(
     channelId,
-    `#${user?.branch?.name}\n${text} \nUmumiy narxi: ${umumiyNarx} \n Yuborilgan <a href="tg://user?id=${id}">${user?.name}</a>`
+    `#${user?.branch?.name}\n${text} \nUmumiy narxi: ${umumiyNarx} \n Yuborilgan <a href="tg://user?id=${id}">${user?.name}</a>`,
+    {
+      parse_mode: "HTML",
+    }
   );
   ctx.reply("Buyurtma adminga yuborildi");
 
