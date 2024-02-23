@@ -92,7 +92,7 @@ scene.hears(/^[0-9]+$/, async (ctx: any) => {
   for (let i = 0; i < orderProduct.length; i++) {
     let txt = `${i + 1}. ${orderProduct[i].count} x ${
       orderProduct[i].product.name
-    }`;
+    }\n`;
     text += txt;
   }
 
