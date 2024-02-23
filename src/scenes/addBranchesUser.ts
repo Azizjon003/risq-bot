@@ -157,8 +157,7 @@ scene.hears(/^[0-9]+$/, async (ctx: any) => {
         telegram_id: String(userId),
       },
       data: {
-        telegram_id: String(userId),
-        branchId: "",
+        branchId: null,
       },
     });
 
