@@ -14,6 +14,7 @@ export let keyboard = [
 export let keyboard2 = ["Fikr bildirish", "Admin bilan aloqa"];
 scene.enter(async (ctx: any) => {
   const user_id = ctx.from?.id;
+  const text = ctx.update.message?.text?.trim().split(" ")[1];
   const user_name = ctx.from?.first_name || ctx.from?.username;
   console.log("ctx");
   const enable = await enabled(String(user_id), String(user_name));
@@ -43,12 +44,18 @@ scene.enter(async (ctx: any) => {
     console.log("Добро пожаловать в бот");
     return ctx.scene.enter("branches");
   } else if (enable === "two") {
+    ctx.session.user = {
+      branch_id: text,
+    };
     ctx.reply("Добро пожаловать в бот", {
       ...keyboards(keyboard2),
       remove_keyboard: true,
     });
     ctx.scene.enter("publicUsers");
   } else if (enable === "three") {
+    ctx.session.user = {
+      branch_id: text,
+    };
     ctx.reply("Добро пожаловать в бот", {
       ...keyboards(keyboard2),
       remove_keyboard: true,

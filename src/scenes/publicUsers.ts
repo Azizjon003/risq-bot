@@ -26,11 +26,27 @@ scene.on("message", async (ctx: any) => {
   const user_name = ctx.from?.first_name || ctx.from?.username;
   const user = ctx.session.user;
   let text = ctx.message.text;
+  const branchId = ctx.session.user?.branch_id;
+  let branch = await prisma.branch.findFirst({
+    where: {
+      id: String(branchId),
+    },
+  });
+
+  if (!branch) {
+    branch = {
+      name: "Umumiy risq uchun",
+      id: "0",
+      address: "",
+      created_at: new Date(),
+      updated_at: new Date(),
+    };
+  }
   if (user.action === "fikr") {
     ctx.reply("Fikringiz qabul qilindi");
     ctx.telegram.sendMessage(
       groupId,
-      `Fikr: ${text}\nYuborilgan <a href="tg://user?id=${user_id}">${user_id}</a>`,
+      `#${branch?.name}\nFikr: ${text}\nYuborilgan <a href="tg://user?id=${user_id}">${user_id}</a>`,
       {
         parse_mode: "HTML",
       }
@@ -38,7 +54,7 @@ scene.on("message", async (ctx: any) => {
   } else if (user.action === "aloqa") {
     ctx.telegram.sendMessage(
       groupId,
-      `Admin uchun aloqa: ${text}\n\nYuborilgan <a href="tg://user?id=${user_id}">${user_id}</a>`,
+      `#${branch?.name}\nAdmin uchun aloqa: ${text}\n\nYuborilgan <a href="tg://user?id=${user_id}">${user_id}</a>`,
       {
         parse_mode: "HTML",
       }

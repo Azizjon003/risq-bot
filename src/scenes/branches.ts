@@ -112,6 +112,7 @@ scene.action("send", async (ctx: any) => {
     channelId,
     `#${user?.branch?.name}\n${text} \nUmumiy narxi: ${umumiyNarx} \n `
   );
+  ctx.reply("Buyurtma adminga yuborildi");
 
   return ctx.scene.enter("branches");
 });
@@ -129,6 +130,7 @@ scene.on("message", async (ctx: any) => {
       branch: true,
     },
   });
+  console.log(text, "user");
 
   if (user?.branch?.name !== text) {
     ctx.reply("Sizda bunday filial mavjud emas!");

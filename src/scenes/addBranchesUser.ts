@@ -58,6 +58,12 @@ scene.action(/^(?=[a-f\d]{24}$)(\d+[a-f]|[a-f]+\d)/i, async (ctx: any) => {
       callback_data: "add",
     },
   ]);
+  buttons.push([
+    {
+      text: "Foydalanuvchini o'chirish",
+      callback_data: "deleteuser",
+    },
+  ]);
 
   let text = `Filial nomi: ${branch.name}. Foydalanuvchilar ro'yxati`;
   ctx.reply(text, {
@@ -86,6 +92,23 @@ scene.action("add", async (ctx: any) => {
   };
 
   const txt = "Yangi foydalanuvchini qo'shish uchun uning idsini kiriting";
+  ctx.reply(txt);
+});
+scene.action("deleteuser", async (ctx: any) => {
+  const text = ctx.update.callback_query?.data;
+  const branchId = ctx.session.user.branch_id;
+  const user = await prisma.user.findFirst({
+    where: {
+      telegram_id: String(ctx.from.id),
+    },
+  });
+
+  ctx.session.user = {
+    current_action: "delete_action",
+    branch_id: branchId,
+  };
+
+  const txt = "Foydalanuvchini o'chirish uchun uning idsini kiriting";
   ctx.reply(txt);
 });
 
@@ -117,6 +140,29 @@ scene.hears(/^[0-9]+$/, async (ctx: any) => {
     });
 
     ctx.reply("Foydalanuvchi qo'shildi");
+    return ctx.scene.enter("admin");
+  } else if (handle === "delete_action") {
+    const user = await prisma.user.findFirst({
+      where: {
+        telegram_id: String(userId),
+      },
+    });
+
+    if (!user) {
+      return ctx.reply("Foydalanuvchi mavjud emas");
+    }
+
+    await prisma.user.update({
+      where: {
+        telegram_id: String(userId),
+      },
+      data: {
+        telegram_id: String(userId),
+        branchId: "",
+      },
+    });
+
+    ctx.reply("Foydalanuvchi o'chirildi");
     return ctx.scene.enter("admin");
   }
 });
