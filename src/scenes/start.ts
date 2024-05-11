@@ -50,23 +50,23 @@ scene.enter(async (ctx: any) => {
     console.log("Добро пожаловать в бот");
     return ctx.scene.enter("branches");
   } else if (enable === "two") {
-    ctx.session.user = {
-      branch_id: text,
-    };
-    ctx.reply("Добро пожаловать в бот", {
-      ...keyboards(keyboard2),
-      remove_keyboard: true,
-    });
-    ctx.scene.enter("publicUsers");
+    // ctx.session.user = {
+    //   branch_id: text,
+    // };
+    // ctx.reply("Добро пожаловать в бот", {
+    //   ...keyboards(keyboard2),
+    //   remove_keyboard: true,
+    // });
+    // ctx.scene.enter("publicUsers");
   } else if (enable === "three") {
-    ctx.session.user = {
-      branch_id: text,
-    };
-    ctx.reply("Добро пожаловать в бот", {
-      ...keyboards(keyboard2),
-      remove_keyboard: true,
-    });
-    return ctx.scene.enter("publicUsers");
+    // ctx.session.user = {
+    //   branch_id: text,
+    // };
+    // ctx.reply("Добро пожаловать в бот", {
+    //   ...keyboards(keyboard2),
+    //   remove_keyboard: true,
+    // });
+    // return ctx.scene.enter("publicUsers");
   } else if (enable === "four") {
     ctx.reply("Welcome to the bot admin!", {
       ...keyboards(keyboard),
