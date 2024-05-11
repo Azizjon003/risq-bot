@@ -44,7 +44,7 @@ scene.hears("Bugungi buyurtmalar", async (ctx: any) => {
   for (let i = 0; i < orderProduct.length; i++) {
     let txt = `${i + 1}. ${orderProduct[i].count} x ${
       orderProduct[i].product.name
-    }\n`;
+    } =  ${orderProduct[i].count * orderProduct[i].product.price} so'mg\n`;
     text += txt;
   }
 
