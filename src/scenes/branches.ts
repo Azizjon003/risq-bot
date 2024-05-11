@@ -1,7 +1,7 @@
 import { Scenes } from "telegraf";
 import prisma from "../../prisma/prisma";
 import { createInlineKeyboard } from "../utils/keyboards";
-import { addInlineKeyboard } from "../utils/functions";
+import { addInlineKeyboard, formatNumber } from "../utils/functions";
 
 const scene = new Scenes.BaseScene("branches");
 scene.hears("/start", (ctx: any) => ctx.scene.enter("start"));
@@ -156,7 +156,9 @@ scene.action("send", async (ctx: any) => {
   for (let i = 0; i < orderProduct.length; i++) {
     let txt = `${i + 1}. ${orderProduct[i].count} x ${
       orderProduct[i].product.name
-    } = ${orderProduct[i].count * orderProduct[i].product.price}\n`;
+    } = ${formatNumber(
+      orderProduct[i].count * orderProduct[i].product.price
+    )}\n`;
     text += txt;
   }
   const channelId = process.env.CHANNEL_ID;

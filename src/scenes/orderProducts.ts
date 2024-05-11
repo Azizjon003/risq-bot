@@ -1,7 +1,7 @@
 import { Markup, Scenes } from "telegraf";
 import prisma from "../../prisma/prisma";
 import { createInlineKeyboard } from "../utils/keyboards";
-import { addInlineKeyboard } from "../utils/functions";
+import { addInlineKeyboard, formatNumber } from "../utils/functions";
 
 const scene = new Scenes.BaseScene("orders");
 
@@ -92,7 +92,9 @@ scene.hears(/^[0-9]+$/, async (ctx: any) => {
   for (let i = 0; i < orderProduct.length; i++) {
     let txt = `${i + 1}. ${orderProduct[i].count} x ${
       orderProduct[i].product.name
-    }\n`;
+    } = ${formatNumber(
+      orderProduct[i].count * orderProduct[i].product.price
+    )}\n`;
     text += txt;
   }
 

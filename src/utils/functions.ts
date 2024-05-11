@@ -38,3 +38,7 @@ export const addInlineKeyboard = (arr: any[]) => {
 
   return left;
 };
+
+export function formatNumber(num: number) {
+  return num.toLocaleString("uz-UZ");
+}
