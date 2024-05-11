@@ -156,9 +156,7 @@ scene.action("send", async (ctx: any) => {
   for (let i = 0; i < orderProduct.length; i++) {
     let txt = `${i + 1}. ${orderProduct[i].count} x ${
       orderProduct[i].product.name
-    } = ${formatNumber(
-      orderProduct[i].count * orderProduct[i].product.price
-    )}\n`;
+    } \n`;
     text += txt;
   }
   const channelId = process.env.CHANNEL_ID;

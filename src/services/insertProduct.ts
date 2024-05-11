@@ -70,14 +70,13 @@ const insertNewProduct = async () => {
 
   // Telefonlar haqidagi ma'lumotlarni saqlash uchun yangi massiv
   const phones: any = data
-    .slice(1)
     .map((row: any) => {
       if (row[0]) {
         return {
           name: row[0],
-          memory: row[1],
-          color: row[2],
-          price: row[3],
+          memory: "",
+          color: "",
+          price: 0,
         };
       }
     })
