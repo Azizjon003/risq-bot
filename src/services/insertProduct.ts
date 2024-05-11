@@ -109,4 +109,21 @@ const insertNewProduct = async () => {
   console.log(`${count} products added`);
 };
 
-insertNewProduct();
+const updateProducts = async () => {
+  const products = await prisma.product.findMany();
+
+  for (let product of products) {
+    await prisma.product.update({
+      where: {
+        id: product.id,
+      },
+      data: {
+        name: product.name.trim(),
+      },
+    });
+  }
+};
+
+// insertNewProduct();
+
+updateProducts();
