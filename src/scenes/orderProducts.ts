@@ -142,14 +142,29 @@ scene.on("message", async (ctx: any) => {
     },
   });
 
-  const product = await prisma.product.findFirst({
+  let product = await prisma.product.findFirst({
     where: {
       name: String(data),
     },
   });
 
-  if (!product)
-    return ctx.reply(`Bu mahsulot mavjud emas.Qaytadan urinib ko'ring!`);
+  console.log(product);
+
+  if (!product) {
+    ctx.reply(
+      `Mahsulot topilmadi.Lekin mahsulotni qo'shib qo'ydik!.Endi Mahsulot sonini kiriting(Faqat son kiriting):`
+    );
+
+    product = await prisma.product.create({
+      data: {
+        name: String(data),
+        price: 0,
+      },
+    });
+
+    // ctx.reply(`Bu mahsulot mavjud emas.Qaytadan urinib ko'ring!`);
+  }
+
   const today = new Date();
   today.setHours(0, 0, 0, 0); // Sanani belgilangan vaqtni (0:00:00) sozlaymiz
 

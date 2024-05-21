@@ -47,7 +47,7 @@ scene.enter(async (ctx: any) => {
     });
     // }
 
-    console.log("Добро пожаловать в бот");
+    // console.log("Добро пожаловать в бот");
     return ctx.scene.enter("branches");
   } else if (enable === "two") {
     // ctx.session.user = {
