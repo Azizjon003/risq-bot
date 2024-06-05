@@ -2,6 +2,7 @@ import { Scenes } from "telegraf";
 import prisma from "../../prisma/prisma";
 import { createInlineKeyboard } from "../utils/keyboards";
 import { addInlineKeyboard, formatNumber } from "../utils/functions";
+import { channel } from "diagnostics_channel";
 
 const scene = new Scenes.BaseScene("branches");
 scene.hears("/start", (ctx: any) => ctx.scene.enter("start"));
@@ -179,14 +180,15 @@ scene.action("send", async (ctx: any) => {
       role: "ADMIN",
     },
   });
+  const channelId = process.env.CHANNEL_ID;
   ctx.telegram.sendMessage(
-    992823235,
+    channelId,
     `#${user?.branch?.name}\n${text}  \n Yuborilgan <a href="tg://user?id=${id}">${user?.name}</a>`,
     {
       parse_mode: "HTML",
-      reply_markup: {
-        inline_keyboard: inlineKeyboard,
-      },
+      // reply_markup: {
+      //   inline_keyboard: inlineKeyboard,
+      // },
     }
   );
   ctx.reply("Buyurtma adminga yuborildi");

@@ -73,6 +73,13 @@ scene.enter(async (ctx: any) => {
       remove_keyboard: true,
     });
     return ctx.scene.enter("admin");
+  } else if (enable === "five") {
+    let mamurKeyboard = ["Mahsulotlarni ko'rish"];
+    ctx.reply("Welcome to the bot mamur!", {
+      ...keyboards(keyboard),
+      remove_keyboard: true,
+    });
+    return ctx.scene.enter("admin");
   }
 });
 
