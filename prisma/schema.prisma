@@ -80,3 +80,13 @@ model admin {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 }
+
+
+model trash {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  name       String
+  product_id String
+  user_id    String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}

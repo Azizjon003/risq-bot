@@ -6,6 +6,7 @@ import botStart from "./utils/startBot";
 import stage from "./scenes/index";
 import { SceneContext } from "telegraf/typings/scenes";
 import findProductByName from "./utils/searchFunction";
+import prisma from "../prisma/prisma";
 bot.use(session);
 
 const middleware: Middleware<Context | SceneContext> = (ctx: any, next) => {
@@ -15,6 +16,239 @@ bot.use(stage.middleware());
 
 bot.start((ctx: any) => ctx.scene.enter("start"));
 
+bot.action(/^aziz/, async (ctx: any) => {
+  const id = ctx.from.id;
+
+  console.log(ctx.update.callback_query);
+  const messageId = ctx.update.callback_query.message.message_id;
+  const inlineMessageId = ctx.update.callback_query.inline_message_id;
+  const query = ctx.update.callback_query.data.split("_")[1];
+  const isProduct = await prisma.orderProducts.findFirst({
+    where: {
+      id: query,
+    },
+    include: {
+      order: true,
+      product: true,
+    },
+  });
+
+  if (!isProduct) {
+    ctx.reply("Bunday mahsulot topilmadi");
+    return;
+  }
+  const userId = isProduct.order.userId;
+
+  const user = await prisma.user.findFirst({
+    where: {
+      id: userId,
+    },
+    include: {
+      branch: true,
+    },
+  });
+
+  if (!user) {
+    ctx.reply("Foydalanuvchi topilmadi");
+    return;
+  }
+  const deleteProduct = await prisma.orderProducts.delete({
+    where: {
+      id: query,
+    },
+  });
+
+  const trashCreate = await prisma.trash.create({
+    data: {
+      user_id: user.id,
+      product_id: isProduct.product.id,
+      name: isProduct.product.name,
+    },
+  });
+  let today = new Date();
+  today.setHours(0, 0, 0, 0);
+  let order = await prisma.order.findFirst({
+    where: {
+      AND: [
+        {
+          userId: String(user?.id),
+        },
+        {
+          branchId: user?.branch?.id,
+        },
+      ],
+      created_at: {
+        gte: today,
+      },
+    },
+  });
+  const orderProduct = await prisma.orderProducts.findMany({
+    where: {
+      order_id: order?.id,
+      created_at: {
+        gte: today,
+      },
+    },
+    include: {
+      product: true,
+    },
+  });
+
+  if (orderProduct.length === 0) {
+    ctx.reply("Mahsulot hali buyurtma bermadingiz");
+    return ctx.scene.enter("branches");
+  }
+
+  let text = `Sizning buyurtmangiz: \n`;
+  let inlineKeyboard = [];
+  for (let i = 0; i < orderProduct.length; i++) {
+    let txt = `${i + 1}. ${orderProduct[i].count} x ${
+      orderProduct[i].product.name
+    } \n`;
+
+    inlineKeyboard.push([
+      {
+        text: `${orderProduct[i].product.name}`,
+        callback_data: `aziz_${orderProduct[i].id}`,
+      },
+    ]);
+    text += txt;
+  }
+  inlineKeyboard.push([
+    {
+      text: "Tasdiqlash",
+      callback_data: `leader_${order?.id}`,
+    },
+  ]);
+
+  ctx.telegram.editMessageText(id, messageId, inlineMessageId, text, {
+    reply_markup: {
+      inline_keyboard: inlineKeyboard,
+    },
+  });
+  // ctx.telegram.sendMessage(
+  //   admin?.telegram_id,
+  //   `#${user?.branch?.name}\n${text}  \n Yuborilgan <a href="tg://user?id=${user.telegram_id}">${user?.name}</a>`,
+  //   {
+  //     parse_mode: "HTML",
+  //     reply_markup: {
+  //       inline_keyboard: inlineKeyboard,
+  //     },
+  //   }
+  // );
+});
+bot.action(/^leader/, async (ctx: any) => {
+  const id = ctx.from.id;
+
+  console.log(ctx.update.callback_query);
+  const messageId = ctx.update.callback_query.message.message_id;
+  const inlineMessageId = ctx.update.callback_query.inline_message_id;
+  const query = ctx.update.callback_query.data.split("_")[1];
+  const isProduct = await prisma.order.findFirst({
+    where: {
+      id: query,
+    },
+    include: {
+      orderProducts: {
+        include: {
+          product: true,
+        },
+      },
+    },
+  });
+  if (!isProduct) {
+    ctx.reply("Bunday mahsulot topilmadi");
+    return;
+  }
+  const userId = isProduct.userId;
+  const user = await prisma.user.findFirst({
+    where: {
+      id: userId,
+    },
+    include: {
+      branch: true,
+    },
+  });
+
+  if (!user) {
+    ctx.reply("Foydalanuvchi topilmadi");
+    return;
+  }
+
+  let today = new Date();
+  today.setHours(0, 0, 0, 0);
+  let order = await prisma.order.findFirst({
+    where: {
+      AND: [
+        {
+          userId: String(user?.id),
+        },
+        {
+          branchId: user?.branch?.id,
+        },
+      ],
+      created_at: {
+        gte: today,
+      },
+    },
+  });
+  const orderProduct = await prisma.orderProducts.findMany({
+    where: {
+      order_id: order?.id,
+      created_at: {
+        gte: today,
+      },
+    },
+    include: {
+      product: true,
+    },
+  });
+
+  if (orderProduct.length === 0) {
+    ctx.reply("Mahsulot hali buyurtma bermadingiz");
+    return ctx.scene.enter("branches");
+  }
+
+  let text = `Sizning buyurtmangiz: \n`;
+  let inlineKeyboard = [];
+  for (let i = 0; i < orderProduct.length; i++) {
+    let txt = `${i + 1}. ${orderProduct[i].count} x ${
+      orderProduct[i].product.name
+    } \n`;
+
+    inlineKeyboard.push([
+      {
+        text: `${orderProduct[i].product.name}`,
+        callback_data: `aziz_${orderProduct[i].id}`,
+      },
+    ]);
+    text += txt;
+  }
+  inlineKeyboard.push([
+    {
+      text: "Tasdiqlash",
+      callback_data: `leader_${order?.id}`,
+    },
+  ]);
+
+  const channelId = process.env.CHANNEL_ID;
+
+  ctx.telegram.editMessageText(
+    id,
+    messageId,
+    inlineMessageId,
+    text + `\n Mahsulotlar tasdiqlandi`,
+    {
+      reply_markup: {
+        inline_keyboard: [],
+      },
+    }
+  );
+
+  ctx.telegram.sendMessage(channelId, text, {
+    parse_mode: "HTML",
+  });
+});
 bot.on("inline_query", async (ctx: any) => {
   const query = ctx.inlineQuery.query;
   let results: any = [];

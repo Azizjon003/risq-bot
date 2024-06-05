@@ -153,18 +153,40 @@ scene.action("send", async (ctx: any) => {
 
   let text = `Sizning buyurtmangiz: \n`;
   let umumiyNarx = 0;
+  let inlineKeyboard = [];
   for (let i = 0; i < orderProduct.length; i++) {
     let txt = `${i + 1}. ${orderProduct[i].count} x ${
       orderProduct[i].product.name
     } \n`;
+
+    inlineKeyboard.push([
+      {
+        text: `${orderProduct[i].product.name}`,
+        callback_data: `aziz_${orderProduct[i].id}`,
+      },
+    ]);
     text += txt;
   }
-  const channelId = process.env.CHANNEL_ID;
+  inlineKeyboard.push([
+    {
+      text: "Tasdiqlash",
+      callback_data: `leader_${order?.id}`,
+    },
+  ]);
+
+  const admin = await prisma.user.findFirst({
+    where: {
+      role: "ADMIN",
+    },
+  });
   ctx.telegram.sendMessage(
-    channelId,
+    admin?.telegram_id,
     `#${user?.branch?.name}\n${text}  \n Yuborilgan <a href="tg://user?id=${id}">${user?.name}</a>`,
     {
       parse_mode: "HTML",
+      reply_markup: {
+        inline_keyboard: inlineKeyboard,
+      },
     }
   );
   ctx.reply("Buyurtma adminga yuborildi");
