@@ -180,7 +180,7 @@ scene.action("send", async (ctx: any) => {
     },
   });
   ctx.telegram.sendMessage(
-    admin?.telegram_id,
+    992823235,
     `#${user?.branch?.name}\n${text}  \n Yuborilgan <a href="tg://user?id=${id}">${user?.name}</a>`,
     {
       parse_mode: "HTML",
