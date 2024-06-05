@@ -82,7 +82,9 @@ scene.action(/^\d+$/, async (ctx: any) => {
   });
 
   if (!branch) return ctx.reply("Bunday fillial yo'q");
-  const date = new Date(new Date().getDay() - Number(numberOfDays));
+  const date = new Date(
+    new Date().getTime() - Number(numberOfDays) * 86400 * 1000
+  );
   const orders = await prisma.order.findMany({
     where: {
       created_at: {
