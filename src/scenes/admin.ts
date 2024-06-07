@@ -170,7 +170,7 @@ scene.on("message", async (ctx: any) => {
       take: 2,
     })) || [
       { created_at: new Date(new Date().getTime() - 86400 * 1000) },
-      { created_at: new Date(new Date().getTime() - 86400 * 1000) },
+      { created_at: new Date(new Date().getTime() - 7 * 86400 * 1000) },
     ];
 
     const products = await prisma.orderProducts.findMany({
