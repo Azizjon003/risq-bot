@@ -89,7 +89,7 @@ model trash {
   name       String
   product_id String
   user_id    String
-  count      String
+  count      String?
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 }
