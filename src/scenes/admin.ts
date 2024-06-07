@@ -162,19 +162,22 @@ scene.on("message", async (ctx: any) => {
     });
     return ctx.scene.enter("addBranchesUser");
   } else if (text === "Umumiy statistika") {
-    const endOrders = await prisma.orderTimes.findMany({
+    const endOrders = (await prisma.orderTimes.findMany({
       orderBy: {
         created_at: "desc",
       },
 
       take: 2,
-    });
+    })) || [
+      { created_at: new Date(new Date().getTime() - 86400 * 1000) },
+      { created_at: new Date(new Date().getTime() - 86400 * 1000) },
+    ];
 
     const products = await prisma.orderProducts.findMany({
       where: {
         created_at: {
-          lte: endOrders[0].created_at,
-          gte: endOrders[1].created_at,
+          lte: endOrders[0]?.created_at,
+          gte: endOrders[1]?.created_at,
         },
       },
       include: {
