@@ -26,6 +26,7 @@ model User {
   branchId    String? @db.ObjectId
   branch      Branch? @relation(fields: [branchId], references: [id])
   orders      order[]
+  orderTimes  orderTimes[]
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
@@ -88,6 +89,16 @@ model trash {
   name       String
   product_id String
   user_id    String
+  count      String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model orderTimes {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  time       DateTime
+  user_id    String   @db.ObjectId
+  user       User     @relation(fields: [user_id], references: [id])
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 }

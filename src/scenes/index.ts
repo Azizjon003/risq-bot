@@ -9,6 +9,7 @@ import addbranchUser from "./addBranchesUser";
 import publicUsers from "./publicUsers";
 import addBranch from "./addBranch";
 import addProducts from "./addProducts";
+import mamur from "./mamur";
 const stage = new Scenes.Stage([
   start,
   branches,
@@ -20,6 +21,7 @@ const stage = new Scenes.Stage([
   addbranchUser,
   publicUsers,
   addProducts,
+  mamur,
 ]);
 
 export default stage;

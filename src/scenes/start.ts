@@ -10,6 +10,7 @@ export let keyboard = [
   "Foydalanuvchilar",
   "Mahsulotlar",
   "Filliallarga odam qo'shish",
+  "Umumiy statistika",
 ];
 export let keyboard2 = ["Fikr bildirish", "Admin bilan aloqa"];
 scene.enter(async (ctx: any) => {
@@ -72,14 +73,16 @@ scene.enter(async (ctx: any) => {
       ...keyboards(keyboard),
       remove_keyboard: true,
     });
+
+    console.log("Welcome to the bot admin!");
     return ctx.scene.enter("admin");
   } else if (enable === "five") {
-    let mamurKeyboard = ["Mahsulotlarni ko'rish"];
+    let mamurKeyboard = ["Mahsulotlarni yetkazish", "Oxirgi yetkazilgan vaqt"];
     ctx.reply("Welcome to the bot mamur!", {
-      ...keyboards(keyboard),
+      ...keyboards(mamurKeyboard),
       remove_keyboard: true,
     });
-    return ctx.scene.enter("admin");
+    return ctx.scene.enter("mamur");
   }
 });
 

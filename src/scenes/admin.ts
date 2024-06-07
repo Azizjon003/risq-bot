@@ -1,7 +1,11 @@
 import { Scenes } from "telegraf";
 import prisma from "../../prisma/prisma";
+import path from "path";
 import { createInlineKeyboard } from "../utils/keyboards";
 import { addInlineKeyboard } from "../utils/functions";
+import { addAllDataToExcel } from "../utils/addExcelAllDatas";
+import { sleep } from "./fillialsEdit";
+import fs from "fs";
 
 const scene = new Scenes.BaseScene("admin");
 scene.hears("/start", (ctx: any) => ctx.scene.enter("start"));
@@ -12,6 +16,7 @@ let keyboard = [
   "Foydalanuvchilar",
   "Mahsulotlar",
   "Filliallarga odam qo'shish",
+  "Umumiy statistika",
 ];
 
 scene.action("add", async (ctx: any) => {
@@ -30,9 +35,9 @@ scene.action("delete", async (ctx: any) => {
   return ctx.scene.enter("addproducts");
 });
 
-scene.hears(keyboard, async (ctx: any) => {
+scene.on("message", async (ctx: any) => {
   const text = ctx.update.message?.text?.trim();
-  console.log(text);
+  console.log(text, "nimadirlar");
   if (text === "Bugungi buyurtmalar") {
     const branches = await prisma.branch.findMany({});
     let buttons = branches.map((item) => {
@@ -156,6 +161,106 @@ scene.hears(keyboard, async (ctx: any) => {
       },
     });
     return ctx.scene.enter("addBranchesUser");
+  } else if (text === "Umumiy statistika") {
+    const endOrders = await prisma.orderTimes.findMany({
+      orderBy: {
+        created_at: "desc",
+      },
+
+      take: 2,
+    });
+
+    const products = await prisma.orderProducts.findMany({
+      where: {
+        created_at: {
+          lte: endOrders[0].created_at,
+          gte: endOrders[1].created_at,
+        },
+      },
+      include: {
+        product: true,
+        order: {
+          include: {
+            branch: true,
+          },
+        },
+      },
+    });
+    let productsData = products.map((item) => {
+      return {
+        product: item.product.name,
+        count: item.count,
+        branch: item.order.branch.name,
+        created_at: item.created_at,
+      };
+    });
+
+    let text = `Umumiy statistika\n\n`;
+
+    let trash = await prisma.trash.findMany({
+      where: {
+        created_at: {
+          lte: endOrders[0].created_at,
+          gte: endOrders[1].created_at,
+        },
+      },
+    });
+
+    let trushData = [];
+    for (let [index, item] of trash.entries()) {
+      let product = await prisma.product.findUnique({
+        where: {
+          id: item.product_id,
+        },
+      });
+
+      let user = await prisma.user.findUnique({
+        where: {
+          id: item.user_id,
+        },
+        include: {
+          branch: true,
+        },
+      });
+      trushData.push({
+        product: product?.name,
+        count: item.count,
+        branch: user?.branch?.name,
+        created_at: item.created_at,
+      });
+    }
+    const data = {
+      totalProdutcs: products.length,
+      totalTrash: trash.length,
+      products: productsData,
+      trash: trushData,
+    };
+
+    let filename = path.join(
+      __dirname,
+      `../public/${new Date().getTime()}.xlsx`
+    );
+    const datas = await addAllDataToExcel(filename, data);
+
+    if (!datas)
+      return ctx.reply(
+        "Faylni yuklashda xatolik qaytadan raqamni kiritib ko'ring"
+      );
+    await sleep(1000);
+
+    const readFile = fs.readFileSync(filename);
+    const id = ctx.from.id;
+    ctx.telegram.sendDocument(
+      id,
+      {
+        source: readFile,
+        filename: "data.xlsx",
+      },
+      {
+        caption: `Umumiy ma'lumot ma'lumot`,
+      }
+    );
+    return ctx.scene.enter("admin");
   }
 });
 

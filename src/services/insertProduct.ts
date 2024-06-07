@@ -26,6 +26,7 @@ const insertProduct = async () => {
 
     for (let i = 0; i < data.length; i++) {
       let product = data[i][0];
+      console.log(product);
       const produtcs = await prisma.product.create({
         data: {
           name: product,
@@ -39,7 +40,7 @@ const insertProduct = async () => {
   }
 };
 
-// insertProduct();
+insertProduct();
 
 const updateproduct = async () => {
   let data = await prisma.product.updateMany({
@@ -126,4 +127,4 @@ const updateProducts = async () => {
 
 // insertNewProduct();
 
-updateProducts();
+// updateProducts();

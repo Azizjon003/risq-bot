@@ -164,7 +164,7 @@ scene.on("message", async (ctx: any) => {
 
 export default scene;
 
-async function sleep(milliseconds: number) {
+export async function sleep(milliseconds: number) {
   return new Promise((resolve) => setTimeout(resolve, milliseconds));
 }
 
