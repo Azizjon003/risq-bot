@@ -17,6 +17,9 @@ scene.action("add", async (ctx: any) => {
     },
   });
 
+  if (user?.role !== "ADMIN") {
+    return ctx.reply("Adminga mumkin faqat");
+  }
   ctx.session.user = {
     current_action: "new_branch",
   };
@@ -146,6 +149,10 @@ scene.on("message", async (ctx: any) => {
       telegram_id: String(id),
     },
   });
+
+  if (user?.role !== "ADMIN") {
+    return ctx.reply("Adminga mumkin faqat");
+  }
 
   const current_action = ctx.session.user.current_action;
 

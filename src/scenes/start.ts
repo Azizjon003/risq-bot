@@ -77,7 +77,11 @@ scene.enter(async (ctx: any) => {
     console.log("Welcome to the bot admin!");
     return ctx.scene.enter("admin");
   } else if (enable === "five") {
-    let mamurKeyboard = ["Mahsulotlarni yetkazish", "Oxirgi yetkazilgan vaqt"];
+    let mamurKeyboard = [
+      "Mahsulotlarni yetkazish",
+      "Oxirgi yetkazilgan vaqt",
+      "Filiallar",
+    ];
     ctx.reply("Welcome to the bot mamur!", {
       ...keyboards(mamurKeyboard),
       remove_keyboard: true,

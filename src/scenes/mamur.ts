@@ -298,6 +298,26 @@ scene.action("leader", async (ctx: any) => {
   ctx.editMessageText("Buyurtmalar yetkazildi");
 });
 
+scene.hears("Filiallar", async (ctx: any) => {
+  const branches = await prisma.branch.findMany({});
+  let buttons = branches.map((item) => {
+    return [
+      {
+        text: item.name,
+        callback_data: item.id,
+      },
+    ];
+  });
+
+  ctx.reply("Filiallarimiz", {
+    reply_markup: {
+      inline_keyboard: buttons,
+    },
+  });
+
+  return ctx.scene.enter("editFillials");
+});
+
 async function getPaginatedProducts(
   // prisma: any,
   times: Date,

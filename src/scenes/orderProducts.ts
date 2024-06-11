@@ -23,24 +23,30 @@ scene.hears(/^[0-9]+$/, async (ctx: any) => {
       },
     },
   });
-  const today = user?.orders[0].created_at; // Sanani belgilangan vaqtni (0:00:00) sozlaymiz
 
+  console.log(user?.orders);
+  const orderId = user?.orders[0].id;
   let orders = await prisma.order.findFirst({
     where: {
-      userId: String(user?.id),
-      branchId: String(user?.branchId),
-      created_at: {
-        gte: today,
-      },
-      messageId: null,
+      id: orderId,
+      // messageId: null,
     },
   });
 
+  console.log(orders);
   const branch = await prisma.branch.findFirst({
     where: {
       id: String(user?.branchId),
     },
   });
+  if (orders?.messageId) {
+    orders = await prisma.order.create({
+      data: {
+        userId: String(user?.id),
+        branchId: String(user?.branchId),
+      },
+    });
+  }
 
   if (!orders) {
     orders = await prisma.order.create({
@@ -190,7 +196,7 @@ scene.on("message", async (ctx: any) => {
         userId: String(user?.id),
         branchId: String(user?.branchId),
         created_at: {
-          gt: today,
+          gte: today,
         },
       },
     },
