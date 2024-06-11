@@ -15,9 +15,15 @@ scene.hears(/^[0-9]+$/, async (ctx: any) => {
     where: {
       telegram_id: String(ctx.from.id),
     },
+    include: {
+      orders: {
+        orderBy: {
+          created_at: "desc",
+        },
+      },
+    },
   });
-  const today = new Date();
-  today.setHours(0, 0, 0, 0); // Sanani belgilangan vaqtni (0:00:00) sozlaymiz
+  const today = user?.orders[0].created_at; // Sanani belgilangan vaqtni (0:00:00) sozlaymiz
 
   let orders = await prisma.order.findFirst({
     where: {
@@ -26,6 +32,7 @@ scene.hears(/^[0-9]+$/, async (ctx: any) => {
       created_at: {
         gte: today,
       },
+      messageId: null,
     },
   });
 
@@ -140,6 +147,13 @@ scene.on("message", async (ctx: any) => {
     where: {
       telegram_id: String(ctx.from.id),
     },
+    include: {
+      orders: {
+        orderBy: {
+          created_at: "desc",
+        },
+      },
+    },
   });
 
   let product = await prisma.product.findFirst({
@@ -165,18 +179,19 @@ scene.on("message", async (ctx: any) => {
     // ctx.reply(`Bu mahsulot mavjud emas.Qaytadan urinib ko'ring!`);
   }
 
-  const today = new Date();
-  today.setHours(0, 0, 0, 0); // Sanani belgilangan vaqtni (0:00:00) sozlaymiz
+  const today = user?.orders[0].created_at;
+  // today.setHours(0, 0, 0, 0); // Sanani belgilangan vaqtni (0:00:00) sozlaymiz
 
   let orderProducts = await prisma.orderProducts.findFirst({
     where: {
       product_id: String(product?.id),
-      created_at: {
-        gte: today,
-      },
+
       order: {
         userId: String(user?.id),
         branchId: String(user?.branchId),
+        created_at: {
+          gt: today,
+        },
       },
     },
   });

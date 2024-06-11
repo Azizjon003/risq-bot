@@ -71,6 +71,7 @@ model order {
   branch        Branch          @relation(fields: [branchId], references: [id])
   branchId      String          @db.ObjectId
   orderProducts orderProducts[]
+  messageId    String?
   created_at    DateTime        @default(now())
   updated_at    DateTime        @updatedAt
 }

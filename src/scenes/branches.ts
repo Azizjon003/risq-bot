@@ -3,7 +3,7 @@ import prisma from "../../prisma/prisma";
 import { createInlineKeyboard } from "../utils/keyboards";
 import { addInlineKeyboard, formatNumber } from "../utils/functions";
 import { channel } from "diagnostics_channel";
-
+import moment from "moment-timezone";
 const scene = new Scenes.BaseScene("branches");
 scene.hears("/start", (ctx: any) => ctx.scene.enter("start"));
 scene.hears("Bugungi buyurtmalar", async (ctx: any) => {
@@ -14,21 +14,25 @@ scene.hears("Bugungi buyurtmalar", async (ctx: any) => {
     },
     include: {
       branch: true,
+      orders: {
+        orderBy: {
+          created_at: "desc",
+        },
+        include: {
+          orderProducts: true,
+        },
+      },
     },
   });
+  console.log(user?.orders);
 
-  let today = new Date();
-  today.setHours(0, 0, 0, 0);
+  let today = user?.orders[0].created_at;
+  const order = user?.orders[0].id;
+  // today.setHours(0, 0, 0, 0);
 
   const orderProduct = await prisma.orderProducts.findMany({
     where: {
-      order: {
-        userId: String(user?.id),
-        branchId: user?.branch?.id,
-      },
-      created_at: {
-        gte: today,
-      },
+      order_id: order,
     },
     include: {
       product: true,
@@ -102,30 +106,27 @@ scene.action("send", async (ctx: any) => {
     },
     include: {
       branch: true,
+      orders: {
+        orderBy: {
+          created_at: "desc",
+        },
+      },
     },
   });
   console.log(user, "user");
 
-  let today = new Date();
-  today.setHours(0, 0, 0, 0);
+  let today = user?.orders[0].created_at;
+  const orderId = user?.orders[0].id;
+  console.log(today, "today");
+  // today.setHours(0, 0, 0, 0);
   let order = await prisma.order.findFirst({
     where: {
-      AND: [
-        {
-          userId: String(user?.id),
-        },
-        {
-          branchId: user?.branch?.id,
-        },
-      ],
-      created_at: {
-        gte: today,
-      },
+      id: orderId,
     },
   });
   const orderProduct = await prisma.orderProducts.findMany({
     where: {
-      order_id: order?.id,
+      // order_id: order?.id,
       // order: {
       //   AND: [
       //     {
@@ -138,9 +139,10 @@ scene.action("send", async (ctx: any) => {
       // userId: String(user?.id),
       // branchId: user?.branch?.id,
       // },
-      created_at: {
-        gte: today,
-      },
+      // created_at: {
+      //   gt: today,
+      // },
+      order_id: orderId,
     },
     include: {
       product: true,
@@ -160,37 +162,70 @@ scene.action("send", async (ctx: any) => {
       orderProduct[i].product.name
     } \n`;
 
-    inlineKeyboard.push([
-      {
-        text: `${orderProduct[i].product.name}`,
-        callback_data: `aziz_${orderProduct[i].id}`,
-      },
-    ]);
     text += txt;
   }
-  inlineKeyboard.push([
-    {
-      text: "Tasdiqlash",
-      callback_data: `leader_${order?.id}`,
-    },
-  ]);
 
   const admin = await prisma.user.findFirst({
     where: {
       role: "ADMIN",
     },
   });
-  const channelId = process.env.CHANNEL_ID;
-  ctx.telegram.sendMessage(
-    channelId,
-    `#${user?.branch?.name}\n${text}  \n Yuborilgan <a href="tg://user?id=${id}">${user?.name}</a>`,
-    {
-      parse_mode: "HTML",
-      // reply_markup: {
-      //   inline_keyboard: inlineKeyboard,
-      // },
-    }
-  );
+  const channelId = process.env.CHANNEL_ID || "nimadir";
+  const messageId = order?.messageId;
+
+  console.log(channelId, "channelId", messageId);
+  const formattedDate = moment(new Date())
+    .tz("Asia/Tashkent")
+    .format("YYYY-MM-DD HH:mm:ss");
+  if (messageId) {
+    // ctx.telegram.editMessageText(
+    // `#${user?.branch?.name}\n${text}  \n Yuborilgan <a href="tg://user?id=${id}">${user?.name}</a>
+    //  Yangilanish vaqti:${formattedDate}
+    // `,
+    //   {
+    //     parse_mode: "HTML",
+    //     // reply_markup: {
+    //     //   inline_keyboard: inlineKeyboard,
+    //     // },
+    //   }
+    // );
+    ctx.telegram.editMessageText(
+      channelId,
+      Number(messageId),
+      undefined,
+      `#${user?.branch?.name}\n${text}  \n Yuborilgan <a href="tg://user?id=${id}">${user?.name}</a>\nYangilanish vaqti:${formattedDate}
+      `,
+      {
+        parse_mode: "HTML",
+        // reply_markup: {
+        //   inline_keyboard: inlineKeyboard,
+        // },
+      }
+    );
+  } else {
+    const messages = await ctx.telegram.sendMessage(
+      channelId,
+      `#${user?.branch?.name}\n${text}  \n Yuborilgan <a href="tg://user?id=${id}">${user?.name}</a>\nYangilanish vaqti:${formattedDate}
+      `,
+      {
+        parse_mode: "HTML",
+        // reply_markup: {
+        //   inline_keyboard: inlineKeyboard,
+        // },
+      }
+    );
+
+    const messageIds = messages.message_id;
+
+    await prisma.order.update({
+      where: {
+        id: order?.id,
+      },
+      data: {
+        messageId: String(messageIds),
+      },
+    });
+  }
   ctx.reply("Buyurtma adminga yuborildi");
 
   return ctx.scene.enter("branches");

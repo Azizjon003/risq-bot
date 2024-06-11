@@ -2,7 +2,7 @@ import { Scenes } from "telegraf";
 import prisma from "../../prisma/prisma";
 import { chunkArrayInline, createInlineKeyboard } from "../utils/keyboards";
 import { addInlineKeyboard } from "../utils/functions";
-
+import moment from "moment-timezone";
 const scene = new Scenes.BaseScene("mamur");
 scene.hears("/start", (ctx: any) => ctx.scene.enter("start"));
 
@@ -18,7 +18,11 @@ scene.hears("Oxirgi yetkazilgan vaqt", async (ctx: any) => {
     return ctx.scene.enter("start");
   }
 
-  let text = `Oxirgi yetkazilgan vaqt: ${ordersTime.created_at}`;
+  const formattedDate = moment(ordersTime.created_at)
+    .tz("Asia/Tashkent")
+    .format("YYYY-MM-DD HH:mm:ss");
+
+  let text = `Oxirgi yetkazilgan vaqt: ${formattedDate}`;
   ctx.reply(text, {});
 });
 
