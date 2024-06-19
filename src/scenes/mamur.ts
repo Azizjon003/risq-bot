@@ -453,11 +453,16 @@ async function getPaginatedProducts(
       skip: skip,
       include: {
         product: true,
+        order: {
+          include: {
+            branch: true,
+          },
+        },
       },
     })
   ).map((item: any) => {
     return {
-      text: `${item.product.name} - ${item.count} ta`,
+      text: `${item.product.name} - ${item.count} ta ${item?.order?.branch?.name} `,
       callback_data: `aziz_${item.id}_${page}`,
     };
   });
