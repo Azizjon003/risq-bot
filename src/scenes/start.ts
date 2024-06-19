@@ -82,6 +82,7 @@ scene.enter(async (ctx: any) => {
       "Oxirgi yetkazilgan vaqt",
       "Filiallar",
       "Umumiy statistika",
+      "Hammasi",
     ];
     ctx.reply("Welcome to the bot mamur!", {
       ...keyboards(mamurKeyboard),

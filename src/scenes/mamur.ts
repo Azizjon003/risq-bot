@@ -353,6 +353,118 @@ scene.hears("Umumiy statistika", async (ctx: any) => {
 
   // Aggregate products by name
   const aggregatedProducts = products.reduce((acc: any, item) => {
+    const key = `${item.product.name}`;
+    if (!acc[key]) {
+      acc[key] = {
+        product: item.product.name,
+        count: 0,
+        branch: "umumiy",
+        created_at: item.created_at,
+      };
+    }
+    acc[key].count += item.count;
+    return acc;
+  }, {});
+
+  let productsData = Object.values(aggregatedProducts);
+
+  let text = `Umumiy statistika\n\n`;
+
+  let trash = await prisma.trash.findMany({
+    where: {
+      created_at: {
+        gte: endOrders[1]?.created_at,
+      },
+    },
+  });
+
+  let trushData = [];
+  for (let [index, item] of trash.entries()) {
+    let product = await prisma.product.findUnique({
+      where: {
+        id: item.product_id,
+      },
+    });
+
+    let user = await prisma.user.findUnique({
+      where: {
+        id: item.user_id,
+      },
+      include: {
+        branch: true,
+      },
+    });
+    trushData.push({
+      product: product?.name,
+      count: item.count,
+      branch: "Umumiy",
+      created_at: item.created_at,
+    });
+  }
+
+  let data = {
+    totalProdutcs: products.length,
+    totalTrash: trash.length,
+    products: productsData,
+    trash: trushData,
+  };
+
+  let filename = path.join(__dirname, `../public/${new Date().getTime()}.xlsx`);
+  const datas = await addAllDataToExcel(filename, data);
+
+  if (!datas) {
+    return ctx.reply(
+      "Faylni yuklashda xatolik qaytadan raqamni kiritib ko'ring"
+    );
+  }
+  await sleep(1000);
+
+  const readFile = fs.readFileSync(filename);
+  const id = ctx.from.id;
+  ctx.telegram.sendDocument(
+    id,
+    {
+      source: readFile,
+      filename: "data.xlsx",
+    },
+    {
+      caption: `Umumiy ma'lumot ma'lumot`,
+    }
+  );
+  return ctx.scene.enter("mamur");
+});
+
+scene.hears("Hammasi", async (ctx: any) => {
+  const txt = ctx.update.message?.text?.trim();
+  const endOrders = (await prisma.orderTimes.findMany({
+    orderBy: {
+      created_at: "desc",
+    },
+    take: 2,
+  })) || [
+    { created_at: new Date(new Date().getTime() - 86400 * 1000) },
+    { created_at: new Date(new Date().getTime() - 7 * 86400 * 1000) },
+  ];
+
+  console.log(endOrders, "endOrders");
+  const products = await prisma.orderProducts.findMany({
+    where: {
+      created_at: {
+        gte: endOrders[1]?.created_at,
+      },
+    },
+    include: {
+      product: true,
+      order: {
+        include: {
+          branch: true,
+        },
+      },
+    },
+  });
+
+  // Aggregate products by name
+  const aggregatedProducts = products.reduce((acc: any, item) => {
     const key = `${item.product.name}-${item.order.branch.name}`;
     if (!acc[key]) {
       acc[key] = {
