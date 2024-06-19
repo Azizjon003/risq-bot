@@ -459,6 +459,13 @@ async function getPaginatedProducts(
           },
         },
       },
+      orderBy: {
+        order: {
+          branch: {
+            name: "asc",
+          },
+        },
+      },
     })
   ).map((item: any) => {
     return {
