@@ -457,7 +457,7 @@ async function getPaginatedProducts(
     })
   ).map((item: any) => {
     return {
-      text: `${item.product.name}`,
+      text: `${item.product.name} - ${item.count} ta`,
       callback_data: `aziz_${item.id}_${page}`,
     };
   });
