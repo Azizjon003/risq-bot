@@ -25,7 +25,7 @@ scene.hears(/^[0-9]+$/, async (ctx: any) => {
   });
 
   console.log(user?.orders);
-  const orderId = user?.orders[0].id;
+  const orderId = user?.orders.length == 0 ? user?.orders[0]?.id : "nimadir";
   let orders = await prisma.order.findFirst({
     where: {
       id: orderId,
@@ -185,7 +185,8 @@ scene.on("message", async (ctx: any) => {
     // ctx.reply(`Bu mahsulot mavjud emas.Qaytadan urinib ko'ring!`);
   }
 
-  const today = user?.orders[0]?.created_at || new Date();
+  const today =
+    user?.orders.length == 0 ? user?.orders[0]?.created_at : new Date();
   // today.setHours(0, 0, 0, 0); // Sanani belgilangan vaqtni (0:00:00) sozlaymiz
 
   let orderProducts = await prisma.orderProducts.findFirst({
