@@ -185,7 +185,7 @@ scene.on("message", async (ctx: any) => {
     // ctx.reply(`Bu mahsulot mavjud emas.Qaytadan urinib ko'ring!`);
   }
 
-  const today = user?.orders[0].created_at;
+  const today = user?.orders[0]?.created_at || new Date();
   // today.setHours(0, 0, 0, 0); // Sanani belgilangan vaqtni (0:00:00) sozlaymiz
 
   let orderProducts = await prisma.orderProducts.findFirst({

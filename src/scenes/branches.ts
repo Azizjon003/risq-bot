@@ -26,8 +26,8 @@ scene.hears("Bugungi buyurtmalar", async (ctx: any) => {
   });
   console.log(user?.orders);
 
-  let today = user?.orders[0].created_at;
-  const order = user?.orders[0].id;
+  let today = user?.orders[0]?.created_at;
+  const order = user?.orders[0]?.id;
   // today.setHours(0, 0, 0, 0);
 
   const orderProduct = await prisma.orderProducts.findMany({
@@ -115,8 +115,8 @@ scene.action("send", async (ctx: any) => {
   });
   console.log(user, "user");
 
-  let today = user?.orders[0].created_at;
-  const orderId = user?.orders[0].id;
+  let today = user?.orders[0]?.created_at;
+  const orderId = user?.orders[0]?.id;
   console.log(today, "today");
   // today.setHours(0, 0, 0, 0);
   let order = await prisma.order.findFirst({
