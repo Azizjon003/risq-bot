@@ -166,7 +166,6 @@ scene.on("message", async (ctx: any) => {
       orderBy: {
         created_at: "desc",
       },
-
       take: 2,
     })) || [
       { created_at: new Date(new Date().getTime() - 86400 * 1000) },
@@ -190,14 +189,23 @@ scene.on("message", async (ctx: any) => {
         },
       },
     });
-    let productsData = products.map((item) => {
-      return {
-        product: item.product.name,
-        count: item.count,
-        branch: item.order.branch.name,
-        created_at: item.created_at,
-      };
-    });
+
+    // Aggregate products by name
+    const aggregatedProducts = products.reduce((acc: any, item) => {
+      const key = `${item.product.name}-${item.order.branch.name}`;
+      if (!acc[key]) {
+        acc[key] = {
+          product: item.product.name,
+          count: 0,
+          branch: item.order.branch.name,
+          created_at: item.created_at,
+        };
+      }
+      acc[key].count += item.count;
+      return acc;
+    }, {});
+
+    let productsData = Object.values(aggregatedProducts);
 
     let text = `Umumiy statistika\n\n`;
 
@@ -233,7 +241,8 @@ scene.on("message", async (ctx: any) => {
         created_at: item.created_at,
       });
     }
-    const data = {
+
+    let data = {
       totalProdutcs: products.length,
       totalTrash: trash.length,
       products: productsData,
@@ -246,10 +255,11 @@ scene.on("message", async (ctx: any) => {
     );
     const datas = await addAllDataToExcel(filename, data);
 
-    if (!datas)
+    if (!datas) {
       return ctx.reply(
         "Faylni yuklashda xatolik qaytadan raqamni kiritib ko'ring"
       );
+    }
     await sleep(1000);
 
     const readFile = fs.readFileSync(filename);
