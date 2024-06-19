@@ -30,7 +30,7 @@ scene.hears("Bugungi buyurtmalar", async (ctx: any) => {
   const order =
     user?.orders.length !== 0
       ? user?.orders[0]?.id
-      : "clxlpk948000708k28n750rol";
+      : "6672b80387832704bb863e0e";
   // today.setHours(0, 0, 0, 0);
 
   const orderProduct = await prisma.orderProducts.findMany({
