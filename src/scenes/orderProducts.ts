@@ -25,7 +25,10 @@ scene.hears(/^[0-9]+$/, async (ctx: any) => {
   });
 
   console.log(user?.orders);
-  const orderId = user?.orders.length == 0 ? user?.orders[0]?.id : "nimadir";
+  const orderId =
+    user?.orders.length !== 0
+      ? user?.orders[0]?.id
+      : "clxlpk948000708k28n750rol";
   let orders = await prisma.order.findFirst({
     where: {
       id: orderId,
