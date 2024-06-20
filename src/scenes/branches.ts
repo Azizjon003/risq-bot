@@ -13,7 +13,11 @@ scene.hears("Bugungi buyurtmalar", async (ctx: any) => {
       telegram_id: String(id),
     },
     include: {
-      branch: true,
+      branch: {
+        include: {
+          orders: {},
+        },
+      },
       orders: {
         orderBy: {
           created_at: "desc",

@@ -324,26 +324,20 @@ scene.hears("Filiallar", async (ctx: any) => {
 
 scene.hears("Umumiy statistika", async (ctx: any) => {
   const txt = ctx.update.message?.text?.trim();
-  // const endOrders = (await prisma.orderTimes.findMany({
-  //   orderBy: {
-  //     created_at: "desc",
-  //   },
-  //   take: 2,
-  // })) || [
-  //   { created_at: new Date(new Date().getTime() - 86400 * 1000) },
-  //   { created_at: new Date(new Date().getTime() - 7 * 86400 * 1000) },
-  // ];
-
-  const ordersTime = await prisma.orderTimes.findFirst({
+  const endOrders = (await prisma.orderTimes.findMany({
     orderBy: {
       created_at: "desc",
     },
-  });
-  console.log(ordersTime, "endOrders");
+    take: 2,
+  })) || [
+    { created_at: new Date(new Date().getTime() - 86400 * 1000) },
+    { created_at: new Date(new Date().getTime() - 7 * 86400 * 1000) },
+  ];
+
   const products = await prisma.orderProducts.findMany({
     where: {
       created_at: {
-        gte: ordersTime?.created_at,
+        gte: endOrders[1]?.created_at,
       },
     },
     include: {
@@ -378,7 +372,7 @@ scene.hears("Umumiy statistika", async (ctx: any) => {
   let trash = await prisma.trash.findMany({
     where: {
       created_at: {
-        gte: ordersTime?.created_at,
+        gte: endOrders[1]?.created_at,
       },
     },
   });
@@ -441,17 +435,20 @@ scene.hears("Umumiy statistika", async (ctx: any) => {
 
 scene.hears("Hammasi", async (ctx: any) => {
   const txt = ctx.update.message?.text?.trim();
-  const ordersTime = await prisma.orderTimes.findFirst({
+  const endOrders = (await prisma.orderTimes.findMany({
     orderBy: {
       created_at: "desc",
     },
-  });
+    take: 2,
+  })) || [
+    { created_at: new Date(new Date().getTime() - 86400 * 1000) },
+    { created_at: new Date(new Date().getTime() - 7 * 86400 * 1000) },
+  ];
 
-  console.log(ordersTime, "endOrders");
   const products = await prisma.orderProducts.findMany({
     where: {
       created_at: {
-        gte: ordersTime?.created_at,
+        gte: endOrders[1]?.created_at,
       },
     },
     include: {
@@ -486,7 +483,7 @@ scene.hears("Hammasi", async (ctx: any) => {
   let trash = await prisma.trash.findMany({
     where: {
       created_at: {
-        gte: ordersTime?.created_at,
+        gte: endOrders[1]?.created_at,
       },
     },
   });
