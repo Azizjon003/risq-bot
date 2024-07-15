@@ -448,7 +448,7 @@ scene.hears("Hammasi", async (ctx: any) => {
   const products = await prisma.orderProducts.findMany({
     where: {
       created_at: {
-        gte: endOrders[1]?.created_at,
+        gte: endOrders[0]?.created_at,
       },
     },
     include: {
