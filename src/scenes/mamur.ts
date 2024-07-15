@@ -483,7 +483,7 @@ scene.hears("Hammasi", async (ctx: any) => {
   let trash = await prisma.trash.findMany({
     where: {
       created_at: {
-        gte: endOrders[1]?.created_at,
+        gte: endOrders[0]?.created_at,
       },
     },
   });
